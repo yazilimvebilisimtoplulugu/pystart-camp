@@ -1,4 +1,4 @@
-# PyStart Python Kampı .
+# PyStart Python Kampı ..
 
 Selam! Düzce Üniversitesi Yazılım ve Bilişim Topluluğu'nun 3 haftalık Python kampına hoş geldin. Videoları kendi hızında izleyecek, her hafta küçük bir ödev çözecek ve çözümünü buraya yükleyeceksin. Hazırsan başlayalım.
 
