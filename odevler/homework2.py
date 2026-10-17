@@ -1,0 +1,12 @@
+sentence=input("please enter a sentence")
+print(len(sentence))
+len1=sentence.replace(" ","")
+print(len(len1))
+len2=sentence.split()
+print(len(len2), len2[0], len2[-1])
+len3=sentence.upper()
+print(len3[::-1])
+len4=sentence.count("a") + sentence.count("A")
+print(len4)
+len5=sentence in "python"
+print(len5)
