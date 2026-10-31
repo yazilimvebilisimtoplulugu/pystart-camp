@@ -1,0 +1,1020 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "85a26e0e",
+   "metadata": {},
+   "source": [
+    "# Hafta 3 Ödevi: Kütüphane Takip Sistemi\n",
+    "\n",
+    "**Konular:** 8-14. modüller | **Klasör:** `ad-soyad/hafta-3/` | **Son teslim:** 31 Ekim Cumartesi, 23.59\n",
+    "\n",
+    "> Bu hafta 5 soru var ve hepsi aynı projenin adımlarıdır: Kütüphane Takip Sistemi.\n",
+    "\n",
+    "**Teslim:** Bu notebook'u doldur, bütün hücreleri çalıştır ve çıktılarla birlikte `ad-soyad/hafta-3/` klasörüne yükle. Soru 5'te oluşacak `kutuphane.py` ve `kitaplar.txt` dosyalarını da aynı klasöre ekle. Google Colab kullanıyorsan bu iki dosyayı soldaki Dosyalar panelinden indir. Repo herkese açık; öğrenci numarası, telefon gibi kişisel bilgilerini yazma.\n",
+    "\n",
+    "---\n",
+    "\n",
+    "**Öğrenci Adı Soyadı:**\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7fbda051",
+   "metadata": {},
+   "source": [
+    "### Proje Tanıtımı: Kütüphane Takip Sistemi\n",
+    "\n",
+    "Bu hafta bir kütüphanenin kitaplarını takip eden menülü bir program yazacaksın. Her soru bir öncekinin üzerine kurulur; beşini bitirdiğinde elinde çalışan bir proje olur.\n",
+    "\n",
+    "Soru 1-4'ü kendi hücrelerinde adım adım yaz ve dene; önceki hücrelerdeki sınıfları gerektikçe güncelle. Soru 5'te projenin son halini kendi modülüne (`kutuphane.py`) taşıyacaksın.\n",
+    "\n",
+    "**Oluşturulacak Yapı:**\n",
+    "- `Kitap` ve `Kutuphane` sınıfları ile özel Exception sınıfları\n",
+    "- `kitaplar.txt` kalıcı dosya kaydı\n",
+    "- Konsol menüsü ve Iterator / Generator entegrasyonu\n",
+    "- Sınıfların bulunduğu kendi modülün: `kutuphane.py`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3c73f73b",
+   "metadata": {},
+   "source": [
+    "### Soru 1: Kitap Sınıfı\n",
+    "\n",
+    "Aşağıdaki özellik ve metotlara sahip `Kitap` sınıfını yaz:\n",
+    "\n",
+    "- **Özellikler:** `baslik`, `yazar`, `yil` ve `odunc_mu` (başta `False`).\n",
+    "- `odunc_ver()`: Kitabı ödünçte olarak işaretler.\n",
+    "- `iade_et()`: Kitabı rafta olarak işaretler.\n",
+    "- `__str__()`: Kitabı tek satırda gösterir: `Suç ve Ceza - Fyodor Dostoyevski (1866) [Rafta]`\n",
+    "\n",
+    "> İki kitap oluştur, birini ödünç ver ve ikisini de `print()` ile yazdırarak sınıfını dene."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "9d570f20",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Suç ve Ceza - Fyodor Dosteyevski (1866) [Rafta]\n",
+      "1984 - George Orwell (1949) [Rafta]\n",
+      "Suç ve Ceza - Fyodor Dosteyevski (1866) [Ödünçte]\n",
+      "1984 - George Orwell (1949) [Rafta]\n",
+      "Suç ve Ceza - Fyodor Dosteyevski (1866) [Rafta]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# --- Soru 1 Kod Alanı ---\n",
+    "class Kitap:\n",
+    "    def __init__(self, baslik, yazar, yil):\n",
+    "        self.baslik= baslik\n",
+    "        self.yazar = yazar\n",
+    "        self.yil =yil\n",
+    "        self.odunc_mu=False\n",
+    "    \n",
+    "    def odunc_ver(self):\n",
+    "        self.odunc_mu =True\n",
+    "\n",
+    "    def iade_et(self):\n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    def __str__(self):\n",
+    "        durum= \"Ödünçte\" if self.odunc_mu else \"Rafta\"\n",
+    "        return f\"{self.baslik} - {self.yazar} ({self.yil}) [{durum}]\"\n",
+    "\n",
+    "kitap1= Kitap(\"Suç ve Ceza\", \"Fyodor Dosteyevski\", 1866)\n",
+    "kitap2= Kitap(\"1984\", \"George Orwell\", 1949)\n",
+    "\n",
+    "print(kitap1)\n",
+    "print(kitap2)\n",
+    "\n",
+    "kitap1.odunc_ver()\n",
+    "\n",
+    "print(kitap1)\n",
+    "print(kitap2)\n",
+    "\n",
+    "kitap1.iade_et()\n",
+    "print(kitap1)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a05ae50d",
+   "metadata": {},
+   "source": [
+    "### Soru 2: Kutuphane Sınıfı ve Temel Menü\n",
+    "\n",
+    "`Kutuphane` sınıfını ve menüyü tasarla:\n",
+    "\n",
+    "- Kitapları bir `kitaplar` listesinde tutar.\n",
+    "- `kitap_ekle(kitap)`: Listeye kitap ekler.\n",
+    "- `kitap_bul(baslik)`: Başlığa göre kitabı bulur (büyük-küçük harf fark etmez).\n",
+    "- `ara(kelime)`: Başlığında kelime geçen kitapların listesini döndürür.\n",
+    "- `odunc_ver(baslik)` ve `iade_al(baslik)`: Kitabı bulup ilgili `Kitap` metodunu çağırır.\n",
+    "\n",
+    "Ayrıca ekleme, listeleme, ödünç verme, iade alma, arama ve çıkış seçenekleri olan bir menü yaz. Menü, çıkış seçilene kadar tekrar gösterilsin."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "a1a54a37",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "===== KÜTÜPHANE TAKİP SİSTEMİ =====\n",
+      "1 - Kitap Ekle\n",
+      "2 - Kitapları Listele\n",
+      "3 - Kitap Ödünç Ver\n",
+      "4 - Kitap İade Al\n",
+      "5 - Kitap Ara\n",
+      "6 - Çıkış\n",
+      "Kitap başarıyla eklendi.\n",
+      "\n",
+      "===== KÜTÜPHANE TAKİP SİSTEMİ =====\n",
+      "1 - Kitap Ekle\n",
+      "2 - Kitapları Listele\n",
+      "3 - Kitap Ödünç Ver\n",
+      "4 - Kitap İade Al\n",
+      "5 - Kitap Ara\n",
+      "6 - Çıkış\n",
+      "Kitap başarıyla eklendi.\n",
+      "\n",
+      "===== KÜTÜPHANE TAKİP SİSTEMİ =====\n",
+      "1 - Kitap Ekle\n",
+      "2 - Kitapları Listele\n",
+      "3 - Kitap Ödünç Ver\n",
+      "4 - Kitap İade Al\n",
+      "5 - Kitap Ara\n",
+      "6 - Çıkış\n",
+      "Suç ve Ceza - Dosteyevski (1866) [Rafta]\n",
+      "1984 - George Orwell (1949) [Rafta]\n",
+      "\n",
+      "===== KÜTÜPHANE TAKİP SİSTEMİ =====\n",
+      "1 - Kitap Ekle\n",
+      "2 - Kitapları Listele\n",
+      "3 - Kitap Ödünç Ver\n",
+      "4 - Kitap İade Al\n",
+      "5 - Kitap Ara\n",
+      "6 - Çıkış\n",
+      "Kütüphane sisteminden çıkılıyor...\n"
+     ]
+    }
+   ],
+   "source": [
+    "# --- Soru 2 Kod Alanı ---\n",
+    "\n",
+    "class Kitap:\n",
+    "    def __init__(self, baslik, yazar, yil):\n",
+    "        self.baslik= baslik\n",
+    "        self.yazar = yazar\n",
+    "        self.yil =yil\n",
+    "        self.odunc_mu=False\n",
+    "    \n",
+    "    def odunc_ver(self):\n",
+    "        self.odunc_mu =True\n",
+    "\n",
+    "    def iade_et(self):\n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    def __str__(self):\n",
+    "        durum= \"Ödünçte\" if self.odunc_mu else \"Rafta\"\n",
+    "        return f\"{self.baslik} - {self.yazar} ({self.yil}) [{durum}]\"\n",
+    "    \n",
+    "class Kutuphane:\n",
+    "    def __init__(self):\n",
+    "        self.kitaplar=[]\n",
+    "\n",
+    "    def kitap_ekle(self, kitap):\n",
+    "        self.kitaplar.append(kitap)\n",
+    "\n",
+    "    def kitap_bul(self,baslik):\n",
+    "        for kitap in self.kitaplar:\n",
+    "            if kitap.baslik.lower()== baslik.lower():\n",
+    "                return kitap    \n",
+    "\n",
+    "        return None\n",
+    "\n",
+    "    def ara(self, kelime): \n",
+    "        bulunanlar = []\n",
+    "        for kitap in self.kitaplar: \n",
+    "            if kelime.lower() in kitap.baslik.lower():      \n",
+    "                bulunanlar.append(kitap)\n",
+    "        return bulunanlar\n",
+    "\n",
+    "    def odunc_ver(self, baslik):\n",
+    "        kitap=self.kitap_bul(baslik)\n",
+    "\n",
+    "        if kitap:\n",
+    "            kitap.odunc_ver()\n",
+    "            return True\n",
+    "        return False            \n",
+    "\n",
+    "    def iade_al(self, baslik): \n",
+    "        kitap = self.kitap_bul(baslik) \n",
+    "        if kitap: \n",
+    "            kitap.iade_et() \n",
+    "            return True \n",
+    "        return False\n",
+    "\n",
+    "# Menü: \n",
+    "kutuphane =Kutuphane()\n",
+    "\n",
+    "while True:\n",
+    "    print(\"\\n===== KÜTÜPHANE TAKİP SİSTEMİ =====\") \n",
+    "    print(\"1 - Kitap Ekle\") \n",
+    "    print(\"2 - Kitapları Listele\") \n",
+    "    print(\"3 - Kitap Ödünç Ver\") \n",
+    "    print(\"4 - Kitap İade Al\") \n",
+    "    print(\"5 - Kitap Ara\") \n",
+    "    print(\"6 - Çıkış\")\n",
+    "\n",
+    "    secim= input(\"Seçiminiz: \")\n",
+    "\n",
+    "    if secim==\"1\":\n",
+    "        baslik = input(\"Kitap başlığı: \") \n",
+    "        yazar = input(\"Kitap yazarı: \")\n",
+    "        yil = int(input(\"Basım yılı: \")) \n",
+    "        kitap = Kitap(baslik, yazar, yil) \n",
+    "        kutuphane.kitap_ekle(kitap) \n",
+    "        print(\"Kitap başarıyla eklendi.\")\n",
+    "\n",
+    "    elif secim == \"2\": \n",
+    "        if kutuphane.kitaplar: \n",
+    "            for kitap in kutuphane.kitaplar:\n",
+    "                print(kitap) \n",
+    "        else: print(\"Kütüphanede henüz kitap bulunmuyor.\") \n",
+    "\n",
+    "    elif secim==\"3\":\n",
+    "        baslik= input(\"Ödünç almak istediğiniz kitabın adı: \")\n",
+    "        if kutuphane.odunc_ver(baslik):\n",
+    "            print(\"Kitap ödünç verildi.\")\n",
+    "        else:\n",
+    "            print(\"Kitap bulunamadı.\")\n",
+    "\n",
+    "    elif secim==\"4\":\n",
+    "        baslik = input(\"İade edilecek kitabın adı: \") \n",
+    "        if kutuphane.iade_al(baslik): \n",
+    "            print(\"Kitap iade alındı.\") \n",
+    "        else: print(\"Kitap bulunamadı.\")             \n",
+    "\n",
+    "    elif secim == \"5\": \n",
+    "        kelime = input(\"Kitap Ara: \") \n",
+    "        bulunanlar = kutuphane.ara(kelime) \n",
+    "        if bulunanlar: \n",
+    "            for kitap in bulunanlar: \n",
+    "                print(kitap) \n",
+    "        else: print(\"Aradığınız kelimeye uygun kitap bulunamadı.\")\n",
+    "\n",
+    "    elif secim == \"6\": \n",
+    "        print(\"Kütüphane sisteminden çıkılıyor...\") \n",
+    "        break   \n",
+    "\n",
+    "    else: print(\"Geçersiz seçim! Tekrar deneyiniz.\") \n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8ccde04c",
+   "metadata": {},
+   "source": [
+    "### Soru 3: Hata Yönetimi\n",
+    "\n",
+    "Özel hata sınıfları tanımla ve işlemleri güvenli hale getir. Soru 1 ve 2'deki metotları buna göre güncelle.\n",
+    "\n",
+    "- Kendi hata sınıflarını yaz: `KitapBulunamadi` ve `KitapMusaitDegil` (`Exception` sınıfından türesin).\n",
+    "- `odunc_ver()` kitap zaten ödünçteyse, `iade_et()` kitap zaten raftaysa `KitapMusaitDegil` fırlatsın (`raise`).\n",
+    "- `kitap_bul()` kitabı bulamazsa `KitapBulunamadi` fırlatsın.\n",
+    "- Menüde bu hataları `try / except` ile yakala ve anlaşılır mesaj göster. Program çökmeksizin devam etsin.\n",
+    "- Yıl sayı olarak girilmezse (`ValueError`) uyarı ver."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "9fbcf20c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Kitap ödünç verildi.\n",
+      "Bu kitap zaten ödünç verilmiş!\n",
+      "Kitap iade edildi.\n",
+      "<__main__.Kitap object at 0x000001B5BEE35A10>\n",
+      "<__main__.Kitap object at 0x000001B5BEE36510>\n"
+     ]
+    }
+   ],
+   "source": [
+    "# --- Soru 3 Kod Alanı ---\n",
+    "class KitapBulunamadi(Exception):\n",
+    "    pass\n",
+    "\n",
+    "class KitapMusaitDegil(Exception):\n",
+    "    pass\n",
+    "\n",
+    "class Kitap:\n",
+    "\n",
+    "    def __init__(self, baslik, yazar, yil):\n",
+    "        self.baslik = baslik\n",
+    "        self.yazar = yazar\n",
+    "        self.yil = yil\n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    def odunc_ver(self): \n",
+    "        if self.odunc_mu: \n",
+    "            raise KitapMusaitDegil(\"Bu kitap zaten ödünç verilmiş!\") \n",
+    "        self.odunc_mu = True\n",
+    "\n",
+    "    def iade_et(self): \n",
+    "        if not self.odunc_mu: \n",
+    "            raise KitapMusaitDegil(\"Bu kitap zaten rafta!\") \n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    class Kutuphane:\n",
+    "        def __init__(self): \n",
+    "            self.kitaplar = [] \n",
+    "        def kitap_ekle(self, kitap): \n",
+    "            self.kitaplar.append(kitap) \n",
+    "        def kitap_bul(self, baslik): \n",
+    "            for kitap in self.kitaplar: \n",
+    "                if kitap.baslik.lower() == baslik.lower(): \n",
+    "                    return kitap\n",
+    "            raise KitapBulunamadi(\"Aradığınız kitap bulunamadı!\")\n",
+    "\n",
+    "        def ara(self, kelime): \n",
+    "                bulunanlar = []\n",
+    "                for kitap in self.kitaplar: \n",
+    "                    if kelime.lower() in kitap.baslik.lower():      \n",
+    "                        bulunanlar.append(kitap)\n",
+    "                return bulunanlar\n",
+    "        \n",
+    "        def odunc_ver(self, baslik):\n",
+    "            kitap=self.kitap_bul(baslik)\n",
+    "        \n",
+    "            if kitap:\n",
+    "                kitap.odunc_ver()\n",
+    "                return True\n",
+    "            return False            \n",
+    "        \n",
+    "        def iade_al(self, baslik): \n",
+    "            kitap = self.kitap_bul(baslik) \n",
+    "            if kitap: \n",
+    "                kitap.iade_et() \n",
+    "                return True \n",
+    "            return False\n",
+    "\n",
+    "kutuphane = Kutuphane()\n",
+    "\n",
+    "kitap1 = Kitap(\"Suç ve Ceza\", \"Dostoyevski\", 1866)\n",
+    "kitap2 = Kitap(\"1984\", \"George Orwell\", 1949)\n",
+    "\n",
+    "kutuphane.kitap_ekle(kitap1)    \n",
+    "kutuphane.kitap_ekle(kitap2)\n",
+    "\n",
+    "\n",
+    "try:\n",
+    "    kutuphane.odunc_ver(\"Suç ve Ceza\")\n",
+    "    print(\"Kitap ödünç verildi.\")\n",
+    "\n",
+    "except KitapBulunamadi as hata:\n",
+    "    print(hata)    \n",
+    "\n",
+    "except KitapMusaitDegil as hata:\n",
+    "    print(hata)\n",
+    "\n",
+    "\n",
+    "try:\n",
+    "    kutuphane.odunc_ver(\"Suç ve Ceza\")\n",
+    "\n",
+    "except KitapMusaitDegil as hata:\n",
+    "    print(hata)\n",
+    "\n",
+    "try:\n",
+    "    kutuphane.iade_al(\"Suç ve Ceza\")\n",
+    "    print(\"Kitap iade edildi.\")\n",
+    "\n",
+    "except KitapBulunamadi as hata:\n",
+    "    print(hata)\n",
+    "\n",
+    "except KitapMusaitDegil as hata:\n",
+    "    print(hata)\n",
+    "\n",
+    "try:\n",
+    "    kutuphane.kitap_bul(\"Harry Potter\")\n",
+    "\n",
+    "except KitapBulunamadi as hata:\n",
+    "    print(hata)\n",
+    "\n",
+    "\n",
+    "print(kitap1)\n",
+    "print(kitap2)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "72e6964a",
+   "metadata": {},
+   "source": [
+    "### Soru 4: Dosya İşlemleri (kitaplar.txt)\n",
+    "\n",
+    "Kitapları kalıcı olarak dosyada sakla:\n",
+    "\n",
+    "- Her kitap `kitaplar.txt` dosyasında bir satır olur. Alanlar `;` ile ayrılır, aralarında boşluk yoktur; son alan kitap ödünçteyse `1`, raftaysa `0` olur:\n",
+    "  ```text\n",
+    "  Suç ve Ceza;Fyodor Dostoyevski;1866;0\n",
+    "  Simyacı;Paulo Coelho;1988;1\n",
+    "  Kürk Mantolu Madonna;Sabahattin Ali;1943;0\n",
+    "  ```\n",
+    "- `Kutuphane` sınıfına kitapları dosyaya yazan `kaydet()` ve dosyadan okuyan `yukle()` metotlarını ekle.\n",
+    "- Program açılınca dosyadaki kitapları yükler. Dosya yoksa (`FileNotFoundError`) boş başlar.\n",
+    "- Menüdeki çıkış seçeneği `'Kaydet ve çık'` olsun ve kitapları dosyaya yazsın (`encoding='utf-8'`).\n",
+    "- Teslim etmeden önce dosyada en az 3 kitap olsun."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "2a98e6b1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Kitaplar dosyaya kaydedildi.\n",
+      "Suç ve Ceza - Dostoyevski (1866) [Rafta]\n",
+      "1984 - George Orwell (1949) [Ödünçte]\n",
+      "Simyacı - Paulo Coelho (1988) [Rafta]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# --- Soru 4 Kod Alanı ---\n",
+    "\n",
+    "# ÖZEL EXCEPTION SINIFLARI\n",
+    "\n",
+    "class KitapBulunamadi(Exception):\n",
+    "    pass\n",
+    "\n",
+    "\n",
+    "class KitapMusaitDegil(Exception):\n",
+    "    pass\n",
+    "\n",
+    "\n",
+    "# KITAP SINIFI\n",
+    "\n",
+    "class Kitap:\n",
+    "\n",
+    "    def __init__(self, baslik, yazar, yil):\n",
+    "        self.baslik = baslik\n",
+    "        self.yazar = yazar\n",
+    "        self.yil = yil\n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    def odunc_ver(self):\n",
+    "        if self.odunc_mu:\n",
+    "            raise KitapMusaitDegil(\"Bu kitap zaten ödünç verilmiş!\")\n",
+    "\n",
+    "        self.odunc_mu = True\n",
+    "\n",
+    "    def iade_et(self):\n",
+    "        if not self.odunc_mu:\n",
+    "            raise KitapMusaitDegil(\"Bu kitap zaten rafta!\")\n",
+    "\n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    def __str__(self):\n",
+    "        durum = \"Ödünçte\" if self.odunc_mu else \"Rafta\"\n",
+    "        return f\"{self.baslik} - {self.yazar} ({self.yil}) [{durum}]\"\n",
+    "\n",
+    "\n",
+    "# KUTUPHANE SINIFI\n",
+    "\n",
+    "class Kutuphane:\n",
+    "\n",
+    "    def __init__(self):\n",
+    "        self.kitaplar = []\n",
+    "\n",
+    "    def kitap_ekle(self, kitap):\n",
+    "        self.kitaplar.append(kitap)\n",
+    "\n",
+    "    def kitap_bul(self, baslik):\n",
+    "        for kitap in self.kitaplar:\n",
+    "            if kitap.baslik.lower() == baslik.lower():\n",
+    "                return kitap\n",
+    "\n",
+    "        raise KitapBulunamadi(\"Aradığınız kitap bulunamadı!\")\n",
+    "\n",
+    "    def ara(self, kelime):\n",
+    "        bulunanlar = []\n",
+    "\n",
+    "        for kitap in self.kitaplar:\n",
+    "            if kelime.lower() in kitap.baslik.lower():\n",
+    "                bulunanlar.append(kitap)\n",
+    "\n",
+    "        return bulunanlar\n",
+    "\n",
+    "    def odunc_ver(self, baslik):\n",
+    "        kitap = self.kitap_bul(baslik)\n",
+    "        kitap.odunc_ver()\n",
+    "\n",
+    "    def iade_al(self, baslik):\n",
+    "        kitap = self.kitap_bul(baslik)\n",
+    "        kitap.iade_et()\n",
+    "\n",
+    "    # DOSYAYA KAYDETME\n",
+    "\n",
+    "    def kaydet(self):\n",
+    "\n",
+    "        with open(\"kitaplar.txt\", \"w\", encoding=\"utf-8\") as dosya:\n",
+    "\n",
+    "            for kitap in self.kitaplar:\n",
+    "\n",
+    "                durum = 1 if kitap.odunc_mu else 0\n",
+    "\n",
+    "                dosya.write(\n",
+    "                    f\"{kitap.baslik};{kitap.yazar};{kitap.yil};{durum}\\n\"\n",
+    "                )\n",
+    "\n",
+    "\n",
+    "    def yukle(self):\n",
+    "\n",
+    "        try:\n",
+    "            with open(\"kitaplar.txt\", \"r\", encoding=\"utf-8\") as dosya:\n",
+    "\n",
+    "                for satir in dosya:\n",
+    "\n",
+    "                    satir = satir.strip()\n",
+    "\n",
+    "                    baslik, yazar, yil, durum = satir.split(\";\")\n",
+    "\n",
+    "                    kitap = Kitap(baslik, yazar, int(yil))\n",
+    "\n",
+    "                    kitap.odunc_mu = True if durum == \"1\" else False\n",
+    "\n",
+    "                    self.kitaplar.append(kitap)\n",
+    "\n",
+    "        except FileNotFoundError:\n",
+    "            print(\"Dosya bulunamadı. Boş kütüphane oluşturuldu.\")\n",
+    "\n",
+    "\n",
+    "# TEST\n",
+    "\n",
+    "kutuphane = Kutuphane()\n",
+    "\n",
+    "# Kitapları ekleyelim\n",
+    "\n",
+    "kitap1 = Kitap(\"Suç ve Ceza\", \"Dostoyevski\", 1866)\n",
+    "kitap2 = Kitap(\"1984\", \"George Orwell\", 1949)\n",
+    "kitap3 = Kitap(\"Simyacı\", \"Paulo Coelho\", 1988)\n",
+    "\n",
+    "kutuphane.kitap_ekle(kitap1)\n",
+    "kutuphane.kitap_ekle(kitap2)\n",
+    "kutuphane.kitap_ekle(kitap3)\n",
+    "\n",
+    "# Bir kitabı ödünç verelim\n",
+    "\n",
+    "kutuphane.odunc_ver(\"1984\")\n",
+    "\n",
+    "# Dosyaya kaydedelim\n",
+    "\n",
+    "kutuphane.kaydet()\n",
+    "\n",
+    "print(\"Kitaplar dosyaya kaydedildi.\")\n",
+    "\n",
+    "# Yeni bir kütüphane oluşturalım\n",
+    "\n",
+    "yeni_kutuphane = Kutuphane()\n",
+    "\n",
+    "# Dosyadan kitapları yükleyelim\n",
+    "\n",
+    "yeni_kutuphane.yukle()\n",
+    "\n",
+    "# Yüklenen kitapları gösterelim\n",
+    "\n",
+    "for kitap in yeni_kutuphane.kitaplar:\n",
+    "    print(kitap)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "36ae7bb6",
+   "metadata": {},
+   "source": [
+    "### Soru 5: Iterator, Generator ve Kendi Modülün\n",
+    "\n",
+    "Projenin son halini toparla:\n",
+    "\n",
+    "- `Kutuphane` sınıfına `__iter__` metodunu ekle; böylece `for kitap in kutuphane:` yazılabilsin. Listelemeyi bu şekilde yap.\n",
+    "- Raftaki kitapları tek tek `yield` eden bir `musait_kitaplar()` generator metodu yaz.\n",
+    "- Menüye raftaki kitapları listeleyen yeni bir seçenek (`6) Raftakiler`) ekle.\n",
+    "- **Kendi modülün:** Hata sınıflarının, `Kitap` ve `Kutuphane` sınıflarının son halini aşağıdaki `%%writefile kutuphane.py` hücresine yaz. Hücre çalışınca kod `kutuphane.py` dosyasına kaydedilir. Menü hücresi sınıfları `from kutuphane import ...` ile alsın.\n",
+    "\n",
+    "**Menü Seçenekleri:**\n",
+    "1) Kitap ekle | 2) Listele | 3) Ödünç ver | 4) İade al | 5) Ara | 6) Raftakiler | 0) Kaydet ve çık\n",
+    "\n",
+    "**Örnek Çıktı (menü satırları kısaltıldı):**\n",
+    "```text\n",
+    "3 kitap yüklendi.\n",
+    "Seçimin: 3\n",
+    "Ödünç verilecek kitap: Suç ve Ceza\n",
+    "Ödünç verildi.\n",
+    "Seçimin: 3\n",
+    "Ödünç verilecek kitap: Suç ve Ceza\n",
+    "Hata: 'Suç ve Ceza' zaten ödünç verilmiş.\n",
+    "Seçimin: 6\n",
+    "Kürk Mantolu Madonna - Sabahattin Ali (1943) [Rafta]\n",
+    "Seçimin: 0\n",
+    "Kaydedildi. Görüşmek üzere!\n",
+    "```\n",
+    "\n",
+    "> Decorator konusunu (12. modül) 3. oturumda bu proje üzerinde birlikte yazacağız."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "147123e1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Writing kutuphane.py\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%writefile kutuphane.py\n",
+    "# --- Soru 5: kutuphane.py ---\n",
+    "\n",
+    "%%writefile kutuphane.py\n",
+    "\n",
+    "class KitapBulunamadi(Exception):\n",
+    "    pass\n",
+    "\n",
+    "\n",
+    "class KitapMusaitDegil(Exception):\n",
+    "    pass\n",
+    "\n",
+    "\n",
+    "class Kitap:\n",
+    "    def __init__(self, baslik, yazar, yil):\n",
+    "        self.baslik = baslik\n",
+    "        self.yazar = yazar\n",
+    "        self.yil = yil\n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    def odunc_ver(self):\n",
+    "        if self.odunc_mu:\n",
+    "            raise KitapMusaitDegil(\n",
+    "                f\"'{self.baslik}' zaten ödünç verilmiş.\"\n",
+    "            )\n",
+    "\n",
+    "        self.odunc_mu = True\n",
+    "\n",
+    "    def iade_et(self):\n",
+    "        self.odunc_mu = False\n",
+    "\n",
+    "    def __str__(self):\n",
+    "        durum = \"Ödünçte\" if self.odunc_mu else \"Rafta\"\n",
+    "\n",
+    "        return f\"{self.baslik} - {self.yazar} ({self.yil}) [{durum}]\"\n",
+    "\n",
+    "\n",
+    "class Kutuphane:\n",
+    "    def __init__(self):\n",
+    "        self.kitaplar = []\n",
+    "\n",
+    "    def kitap_ekle(self, kitap):\n",
+    "        self.kitaplar.append(kitap)\n",
+    "\n",
+    "    def __iter__(self):\n",
+    "        return iter(self.kitaplar)\n",
+    "\n",
+    "    def kitap_bul(self, baslik):\n",
+    "        for kitap in self.kitaplar:\n",
+    "            if kitap.baslik.lower() == baslik.lower():\n",
+    "                return kitap\n",
+    "\n",
+    "        raise KitapBulunamadi(\n",
+    "            f\"'{baslik}' isimli kitap bulunamadı.\"\n",
+    "        )\n",
+    "\n",
+    "    def ara(self, kelime):\n",
+    "        bulunanlar = []\n",
+    "\n",
+    "        for kitap in self.kitaplar:\n",
+    "            if kelime.lower() in kitap.baslik.lower():\n",
+    "                bulunanlar.append(kitap)\n",
+    "\n",
+    "        return bulunanlar\n",
+    "\n",
+    "    def odunc_ver(self, baslik):\n",
+    "        kitap = self.kitap_bul(baslik)\n",
+    "        kitap.odunc_ver()\n",
+    "\n",
+    "    def iade_al(self, baslik):\n",
+    "        kitap = self.kitap_bul(baslik)\n",
+    "        kitap.iade_et()\n",
+    "\n",
+    "    def musait_kitaplar(self):\n",
+    "        for kitap in self.kitaplar:\n",
+    "            if not kitap.odunc_mu:\n",
+    "                yield kitap\n",
+    "\n",
+    "    def kaydet(self):\n",
+    "        with open(\"kitaplar.txt\", \"w\", encoding=\"utf-8\") as dosya:\n",
+    "            for kitap in self.kitaplar:\n",
+    "                durum = 1 if kitap.odunc_mu else 0\n",
+    "\n",
+    "                dosya.write(\n",
+    "                    f\"{kitap.baslik};{kitap.yazar};{kitap.yil};{durum}\\n\"\n",
+    "                )\n",
+    "\n",
+    "    def yukle(self):\n",
+    "        try:\n",
+    "            with open(\"kitaplar.txt\", \"r\", encoding=\"utf-8\") as dosya:\n",
+    "                for satir in dosya:\n",
+    "                    baslik, yazar, yil, durum = satir.strip().split(\";\")\n",
+    "\n",
+    "                    kitap = Kitap(baslik, yazar, int(yil))\n",
+    "                    kitap.odunc_mu = bool(int(durum))\n",
+    "\n",
+    "                    self.kitaplar.append(kitap)\n",
+    "\n",
+    "        except FileNotFoundError:\n",
+    "            pass\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "268d8691",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "SyntaxError",
+     "evalue": "invalid syntax (2552420300.py, line 6)",
+     "output_type": "error",
+     "traceback": [
+      "  \u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[9]\u001b[39m\u001b[32m, line 6\u001b[39m\n\u001b[31m    \u001b[39m\u001b[31mfrom kutuphane import\u001b[39m\n                          ^\n\u001b[31mSyntaxError\u001b[39m\u001b[31m:\u001b[39m invalid syntax\n"
+     ]
+    }
+   ],
+   "source": [
+    "# --- Soru 5: Menü ---\n",
+    "# kutuphane.py değiştiğinde otomatik yeniden yüklensin:\n",
+    "%load_ext autoreload\n",
+    "%autoreload 2\n",
+    "\n",
+    "from kutuphane import \n",
+    "{Kutuphane, \n",
+    " Kitap, \n",
+    " KitapBulunamadi, \n",
+    " KitapMusaitDegil\n",
+    " }\n",
+    "\n",
+    "kutuphane = Kutuphane()\n",
+    "\n",
+    "# Daha önce kaydedilen kitapları yükle\n",
+    "kutuphane.yukle()\n",
+    "\n",
+    "print(f\"{len(kutuphane.kitaplar)} kitap yüklendi.\")\n",
+    "\n",
+    "\n",
+    "while True:\n",
+    "\n",
+    "    print(\"\\n--- KÜTÜPHANE MENÜSÜ ---\")\n",
+    "    print(\"1) Kitap ekle\")\n",
+    "    print(\"2) Listele\")\n",
+    "    print(\"3) Ödünç ver\")\n",
+    "    print(\"4) İade al\")\n",
+    "    print(\"5) Ara\")\n",
+    "    print(\"6) Raftakiler\")\n",
+    "    print(\"0) Kaydet ve çık\")\n",
+    "\n",
+    "    secim = input(\"\\nSeçiminiz: \")\n",
+    "\n",
+    "    try:\n",
+    "\n",
+    "        if secim == \"1\":\n",
+    "\n",
+    "            baslik = input(\"Kitap adı: \")\n",
+    "            yazar = input(\"Yazar: \")\n",
+    "            yil = int(input(\"Yayın yılı: \"))\n",
+    "\n",
+    "            kitap = Kitap(baslik, yazar, yil)\n",
+    "            kutuphane.kitap_ekle(kitap)\n",
+    "\n",
+    "            print(\"Kitap eklendi.\")\n",
+    "\n",
+    "        elif secim == \"2\":\n",
+    "\n",
+    "            for kitap in kutuphane:\n",
+    "                print(kitap)\n",
+    "\n",
+    "        elif secim == \"3\":\n",
+    "\n",
+    "            baslik = input(\"Ödünç verilecek kitap: \")\n",
+    "\n",
+    "            kutuphane.odunc_ver(baslik)\n",
+    "\n",
+    "            print(\"Ödünç verildi.\")\n",
+    "\n",
+    "        elif secim == \"4\":\n",
+    "\n",
+    "            baslik = input(\"İade edilecek kitap: \")\n",
+    "\n",
+    "            kutuphane.iade_al(baslik)\n",
+    "\n",
+    "            print(\"Kitap iade alındı.\")\n",
+    "\n",
+    "        elif secim == \"5\":\n",
+    "\n",
+    "            kelime = input(\"Aranacak kitap: \")\n",
+    "\n",
+    "            bulunanlar = kutuphane.ara(kelime)\n",
+    "\n",
+    "            if bulunanlar:\n",
+    "                for kitap in bulunanlar:\n",
+    "                    print(kitap)\n",
+    "            else:\n",
+    "                print(\"Kitap bulunamadı.\")\n",
+    "\n",
+    "        elif secim == \"6\":\n",
+    "\n",
+    "            for kitap in kutuphane.musait_kitaplar():\n",
+    "                print(kitap)\n",
+    "\n",
+    "        elif secim == \"0\":\n",
+    "\n",
+    "            kutuphane.kaydet()\n",
+    "\n",
+    "            print(\"Kaydedildi. Görüşmek üzere!\")\n",
+    "            break\n",
+    "\n",
+    "        else:\n",
+    "\n",
+    "            print(\"Geçersiz seçim.\")\n",
+    "\n",
+    "    except KitapBulunamadi as hata:\n",
+    "        print(\"Hata:\", hata)\n",
+    "\n",
+    "    except KitapMusaitDegil as hata:\n",
+    "        print(\"Hata:\", hata)\n",
+    "\n",
+    "    except ValueError:\n",
+    "        print(\"Hata: Lütfen geçerli bir değer giriniz.\")\n",
+    "\n",
+    "\n",
+    "\n",
+    "#olmuyor nedenini anlamadım\n",
+    "\n",
+    "\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
+
+Suç ve Ceza;Dostoyevski;1866;0
+1984;George Orwell;1949;1
+Simyacı;Paulo Coelho;1988;0
+
+# --- Soru 5: kutuphane.py ---
+
+%%writefile kutuphane.py
+
+class KitapBulunamadi(Exception):
+    pass
+
+
+class KitapMusaitDegil(Exception):
+    pass
+
+
+class Kitap:
+    def __init__(self, baslik, yazar, yil):
+        self.baslik = baslik
+        self.yazar = yazar
+        self.yil = yil
+        self.odunc_mu = False
+
+    def odunc_ver(self):
+        if self.odunc_mu:
+            raise KitapMusaitDegil(
+                f"'{self.baslik}' zaten ödünç verilmiş."
+            )
+
+        self.odunc_mu = True
+
+    def iade_et(self):
+        self.odunc_mu = False
+
+    def __str__(self):
+        durum = "Ödünçte" if self.odunc_mu else "Rafta"
+
+        return f"{self.baslik} - {self.yazar} ({self.yil}) [{durum}]"
+
+
+class Kutuphane:
+    def __init__(self):
+        self.kitaplar = []
+
+    def kitap_ekle(self, kitap):
+        self.kitaplar.append(kitap)
+
+    def __iter__(self):
+        return iter(self.kitaplar)
+
+    def kitap_bul(self, baslik):
+        for kitap in self.kitaplar:
+            if kitap.baslik.lower() == baslik.lower():
+                return kitap
+
+        raise KitapBulunamadi(
+            f"'{baslik}' isimli kitap bulunamadı."
+        )
+
+    def ara(self, kelime):
+        bulunanlar = []
+
+        for kitap in self.kitaplar:
+            if kelime.lower() in kitap.baslik.lower():
+                bulunanlar.append(kitap)
+
+        return bulunanlar
+
+    def odunc_ver(self, baslik):
+        kitap = self.kitap_bul(baslik)
+        kitap.odunc_ver()
+
+    def iade_al(self, baslik):
+        kitap = self.kitap_bul(baslik)
+        kitap.iade_et()
+
+    def musait_kitaplar(self):
+        for kitap in self.kitaplar:
+            if not kitap.odunc_mu:
+                yield kitap
+
+    def kaydet(self):
+        with open("kitaplar.txt", "w", encoding="utf-8") as dosya:
+            for kitap in self.kitaplar:
+                durum = 1 if kitap.odunc_mu else 0
+
+                dosya.write(
+                    f"{kitap.baslik};{kitap.yazar};{kitap.yil};{durum}\n"
+                )
+
+    def yukle(self):
+        try:
+            with open("kitaplar.txt", "r", encoding="utf-8") as dosya:
+                for satir in dosya:
+                    baslik, yazar, yil, durum = satir.strip().split(";")
+
+                    kitap = Kitap(baslik, yazar, int(yil))
+                    kitap.odunc_mu = bool(int(durum))
+
+                    self.kitaplar.append(kitap)
+
+        except FileNotFoundError:
+            pass
